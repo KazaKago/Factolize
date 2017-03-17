@@ -7,13 +7,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.kazakago.activityinitializer.Initializable;
+import com.kazakago.activityinitializer.FactoryParam;
+import com.kazakago.activityinitializer.FragmentFactory;
 
 /**
  * Created by tamura_k on 2017/03/16.
  */
-@Initializable
+@FragmentFactory
 public class MainFragment extends Fragment {
+
+    @FactoryParam
+    int hogehoge;
+    @FactoryParam
+    String hugahuga;
 
     @Nullable
     @Override
