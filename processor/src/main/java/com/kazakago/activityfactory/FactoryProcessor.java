@@ -1,10 +1,10 @@
-package com.kazakago.activityinitializer;
+package com.kazakago.activityfactory;
 
 import com.google.auto.service.AutoService;
-import com.kazakago.activityinitializer.constants.Types;
-import com.kazakago.activityinitializer.generator.ActivityFactoryGenerator;
-import com.kazakago.activityinitializer.generator.FragmentFactoryGenerator;
-import com.kazakago.activityinitializer.utils.TypeUtils;
+import com.kazakago.activityfactory.constants.Types;
+import com.kazakago.activityfactory.generator.ActivityFactoryGenerator;
+import com.kazakago.activityfactory.generator.FragmentFactoryGenerator;
+import com.kazakago.activityfactory.utils.TypeUtils;
 
 import java.io.IOException;
 import java.util.Set;

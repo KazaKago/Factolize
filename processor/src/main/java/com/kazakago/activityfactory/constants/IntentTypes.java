@@ -1,6 +1,6 @@
-package com.kazakago.activityinitializer.constants;
+package com.kazakago.activityfactory.constants;
 
-import com.kazakago.activityinitializer.utils.TypeUtils;
+import com.kazakago.activityfactory.utils.TypeUtils;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 

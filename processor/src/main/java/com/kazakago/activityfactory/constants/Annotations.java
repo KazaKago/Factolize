@@ -1,4 +1,4 @@
-package com.kazakago.activityinitializer.constants;
+package com.kazakago.activityfactory.constants;
 
 import com.squareup.javapoet.AnnotationSpec;
 

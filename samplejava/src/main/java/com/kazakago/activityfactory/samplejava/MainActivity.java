@@ -1,21 +1,17 @@
-package com.kazakago.activityinitializer.samplejava;
+package com.kazakago.activityfactory.samplejava;
 
-import android.annotation.TargetApi;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Size;
 import android.util.SizeF;
 import android.util.SparseArray;
 
-import com.kazakago.activityinitializer.Factory;
-import com.kazakago.activityinitializer.FactoryParam;
+import com.kazakago.activityfactory.Factory;
+import com.kazakago.activityfactory.FactoryParam;
 
 import java.io.Serializable;
 import java.util.ArrayList;

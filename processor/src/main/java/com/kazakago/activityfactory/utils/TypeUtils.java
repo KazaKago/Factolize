@@ -1,4 +1,4 @@
-package com.kazakago.activityinitializer.utils;
+package com.kazakago.activityfactory.utils;
 
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;

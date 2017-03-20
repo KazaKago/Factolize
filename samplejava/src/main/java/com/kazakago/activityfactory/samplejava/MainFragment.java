@@ -1,4 +1,4 @@
-package com.kazakago.activityinitializer.samplejava;
+package com.kazakago.activityfactory.samplejava;
 
 import android.os.Binder;
 import android.os.Bundle;
@@ -12,8 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.kazakago.activityinitializer.Factory;
-import com.kazakago.activityinitializer.FactoryParam;
+import com.kazakago.activityfactory.Factory;
+import com.kazakago.activityfactory.FactoryParam;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.kazakago.activityinitializer;
+package com.kazakago.activityfactory.samplejava;
 
 import org.junit.Test;
 
