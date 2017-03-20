@@ -2,22 +2,21 @@ package com.kazakago.activityinitializer.generator;
 
 import com.kazakago.activityinitializer.FactoryParam;
 import com.kazakago.activityinitializer.constants.Annotations;
+import com.kazakago.activityinitializer.constants.BundleTypes;
 import com.kazakago.activityinitializer.constants.Types;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
-import java.util.Set;
+import java.util.Arrays;
 
-import javax.annotation.processing.Filer;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
-import javax.lang.model.util.Elements;
 
 /**
  * Fragment factory class generator.
@@ -26,29 +25,35 @@ import javax.lang.model.util.Elements;
  */
 public class FragmentFactoryGenerator {
 
-    private Filer filer;
-    private Elements elements;
+    private ProcessingEnvironment processingEnv;
 
-    public FragmentFactoryGenerator(Filer filer, Elements elements) {
-        this.filer = filer;
-        this.elements = elements;
+    public FragmentFactoryGenerator(ProcessingEnvironment processingEnv) {
+        this.processingEnv = processingEnv;
     }
 
     public void execute(Element element) throws IOException {
-        String packageName = elements.getPackageOf(element).getQualifiedName().toString();
+        String packageName = processingEnv.getElementUtils().getPackageOf(element).getQualifiedName().toString();
         ClassName modelClassName = ClassName.get(packageName, element.getSimpleName().toString());
         ClassName generatedClassName = ClassName.get(packageName, element.getSimpleName().toString() + "Factory");
 
+        MethodSpec constructor = generateConstructor();
         MethodSpec createIntentMethod = generateCreateIntentMethod(element, modelClassName);
 
         TypeSpec generatedClass = TypeSpec.classBuilder(generatedClassName)
                 .addModifiers(Modifier.PUBLIC)
+                .addMethod(constructor)
                 .addMethod(createIntentMethod)
                 .build();
 
         JavaFile.builder(packageName, generatedClass)
                 .build()
-                .writeTo(filer);
+                .writeTo(processingEnv.getFiler());
+    }
+
+    private MethodSpec generateConstructor() {
+        return MethodSpec.constructorBuilder()
+                .addModifiers(Modifier.PRIVATE)
+                .build();
     }
 
     private MethodSpec generateCreateIntentMethod(Element element, ClassName modelClassName) {
@@ -60,51 +65,20 @@ public class FragmentFactoryGenerator {
                 .addStatement("$T arguments = new $T()", Types.Bundle, Types.Bundle);
         for (Element el : element.getEnclosedElements()) {
             if (el.getAnnotation(FactoryParam.class) != null) {
-                TypeName fieldType = TypeName.get(el.asType());
-                String fieldName = el.getSimpleName().toString();
-                String methodNameParam;
-                if (fieldType.equals(TypeName.INT)) {
-                    fieldType = TypeName.INT;
-                    methodNameParam = "Int";
-                } else if (fieldType.equals(TypeName.INT.box())) {
-                    fieldType = TypeName.INT.box();
-                    methodNameParam = "Int";
-                } else if (fieldType.equals(TypeName.LONG)) {
-                    fieldType = TypeName.LONG;
-                    methodNameParam = "Long";
-                } else if (fieldType.equals(TypeName.LONG.box())) {
-                    fieldType = TypeName.LONG.box();
-                    methodNameParam = "Long";
-                } else if (fieldType.equals(TypeName.FLOAT)) {
-                    fieldType = TypeName.FLOAT;
-                    methodNameParam = "Float";
-                } else if (fieldType.equals(TypeName.FLOAT.box())) {
-                    fieldType = TypeName.FLOAT.box();
-                    methodNameParam = "Float";
-                } else if (fieldType.equals(TypeName.BOOLEAN)) {
-                    fieldType = TypeName.BOOLEAN;
-                    methodNameParam = "Boolean";
-                } else if (fieldType.equals(TypeName.BOOLEAN.box())) {
-                    fieldType = TypeName.BOOLEAN.box();
-                    methodNameParam = "Boolean";
-                } else if (fieldType.equals(TypeName.get(String.class))) {
-                    fieldType = TypeName.get(String.class);
-                    methodNameParam = "String";
-                } else if (fieldType.getClass().isInstance(ParameterizedTypeName.get(Set.class, String.class))) {
-                    fieldType = ParameterizedTypeName.get(Set.class, String.class);
-                    methodNameParam = "StringSet";
-                } else {
-                    methodNameParam = "Serializable";
+                BundleTypes bundleTypes = BundleTypes.resolve(processingEnv,  el.asType());
+                if (bundleTypes != null) {
+                    TypeName fieldType = TypeName.get(el.asType());
+                    String fieldName = el.getSimpleName().toString();
+                    ParameterSpec.Builder paramBuilder = ParameterSpec.builder(fieldType, fieldName);
+                    if (!fieldType.isPrimitive()) {
+                        paramBuilder.addAnnotation(Annotations.NonNull);
+                    }
+                    methodBuilder.addParameter(paramBuilder.build())
+                            .addAnnotations(Arrays.asList(bundleTypes.annotations))
+                            .addStatement("arguments.$L($S, $L)", bundleTypes.putMethodName, fieldName, fieldName);
                 }
-                ParameterSpec.Builder paramBuilder = ParameterSpec.builder(fieldType, fieldName);
-                if (!fieldType.isPrimitive()) {
-                    paramBuilder.addAnnotation(Annotations.NonNull);
-                }
-                methodBuilder.addParameter(paramBuilder.build())
-                        .addStatement("arguments.put$L($S, $L)", methodNameParam, fieldName, fieldName);
             }
         }
-
         return methodBuilder.addStatement("fragment.setArguments(arguments)")
                 .addStatement("return fragment")
                 .returns(modelClassName)
