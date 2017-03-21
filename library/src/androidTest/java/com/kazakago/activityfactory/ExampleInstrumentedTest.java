@@ -1,4 +1,4 @@
-package com.kazakago.activityinitializer;
+package com.kazakago.activityfactory;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
