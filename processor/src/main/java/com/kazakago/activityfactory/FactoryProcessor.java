@@ -30,8 +30,8 @@ import javax.tools.Diagnostic;
 @AutoService(Processor.class)
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 @SupportedAnnotationTypes({
-        "com.kazakago.activityinitializer.Factory",
-        "com.kazakago.activityinitializer.FactoryParam"})
+        "com.kazakago.activityfactory.Factory",
+        "com.kazakago.activityfactory.FactoryParam"})
 public class FactoryProcessor extends AbstractProcessor {
 
     private Messager messager;

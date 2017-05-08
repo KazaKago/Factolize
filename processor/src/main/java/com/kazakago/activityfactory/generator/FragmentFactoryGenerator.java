@@ -12,7 +12,6 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -23,14 +22,13 @@ import javax.lang.model.element.Modifier;
  * <p>
  * Created by KazaKago on 2017/03/16.
  */
-public class FragmentFactoryGenerator {
-
-    private ProcessingEnvironment processingEnv;
+public class FragmentFactoryGenerator extends CodeGenerator {
 
     public FragmentFactoryGenerator(ProcessingEnvironment processingEnv) {
-        this.processingEnv = processingEnv;
+        super(processingEnv);
     }
 
+    @Override
     public void execute(Element element) throws IOException {
         String packageName = processingEnv.getElementUtils().getPackageOf(element).getQualifiedName().toString();
         ClassName modelClassName = ClassName.get(packageName, element.getSimpleName().toString());
@@ -38,11 +36,13 @@ public class FragmentFactoryGenerator {
 
         MethodSpec constructor = generateConstructor();
         MethodSpec createIntentMethod = generateCreateIntentMethod(element, modelClassName);
+        MethodSpec injectArgumentMethod = generateInjectArgumentMethod(element, modelClassName);
 
         TypeSpec generatedClass = TypeSpec.classBuilder(generatedClassName)
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(constructor)
                 .addMethod(createIntentMethod)
+                .addMethod(injectArgumentMethod)
                 .build();
 
         JavaFile.builder(packageName, generatedClass)
@@ -74,7 +74,6 @@ public class FragmentFactoryGenerator {
                         paramBuilder.addAnnotation(Annotations.NonNull);
                     }
                     methodBuilder.addParameter(paramBuilder.build())
-                            .addAnnotations(Arrays.asList(bundleTypes.annotations))
                             .addStatement("arguments.$L($S, $L)", bundleTypes.putMethodName, fieldName, fieldName);
                 }
             }
@@ -83,6 +82,33 @@ public class FragmentFactoryGenerator {
                 .addStatement("return fragment")
                 .returns(modelClassName)
                 .build();
+    }
+
+    private MethodSpec generateInjectArgumentMethod(Element element, ClassName modelClassName) {
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("injectArgument")
+                .addModifiers(Modifier.PUBLIC)
+                .addModifiers(Modifier.STATIC)
+                .addParameter(ParameterSpec.builder(modelClassName, "fragment")
+                        .addAnnotation(Annotations.NonNull)
+                        .build())
+                .addParameter(ParameterSpec.builder(Types.Bundle, "savedInstanceState")
+                        .addAnnotation(Annotations.Nullable)
+                        .build());
+        for (Element el : element.getEnclosedElements()) {
+            if (el.getAnnotation(FactoryParam.class) != null) {
+                BundleTypes bundleType = BundleTypes.resolve(processingEnv,  el.asType());
+                if (bundleType != null) {
+                    TypeName fieldType = TypeName.get(el.asType());
+                    String fieldName = el.getSimpleName().toString();
+                    if (bundleType.getDefaultValue != null) {
+                        methodBuilder.addStatement("fragment.$L = ($T) savedInstanceState.$L($S, $L)", fieldName, fieldType, bundleType.getMethodName, fieldName, bundleType.getDefaultValue);
+                    } else {
+                        methodBuilder.addStatement("fragment.$L = ($T) savedInstanceState.$L($S)", fieldName, fieldType, bundleType.getMethodName, fieldName);
+                    }
+                }
+            }
+        }
+        return methodBuilder.build();
     }
 
 }

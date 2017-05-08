@@ -1,7 +1,6 @@
 package com.kazakago.activityfactory.constants;
 
 import com.kazakago.activityfactory.utils.TypeUtils;
-import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.TypeName;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -13,63 +12,65 @@ import javax.lang.model.type.TypeMirror;
 public enum BundleTypes {
 
     //ArrayList<Class>
-    IntegerArrayList(Types.IntegerArrayList, "putIntegerArrayList"),
-    StringArrayList(Types.StringArrayList, "putStringArrayList"),
-    CharSequenceArrayList(Types.CharSequenceArrayList, "putCharSequenceArrayList"),
+    IntegerArrayList(Types.IntegerArrayList, "putIntegerArrayList", "getIntegerArrayList", null),
+    StringArrayList(Types.StringArrayList, "putStringArrayList", "getStringArrayList", null),
+    CharSequenceArrayList(Types.CharSequenceArrayList, "putCharSequenceArrayList", "getCharSequenceArrayList", null),
 
     //ArrayList<Interface>
-    ParcelableArrayList(Types.ParcelableArrayList, "putParcelableArrayList"),
+    ParcelableArrayList(Types.ParcelableArrayList, "putParcelableArrayList", "getParcelableArrayList", null),
 
     //SparseArray<Interface>
-    ParcelableSparseArray(Types.ParcelableSparseArray, "putSparseParcelableArray"),
+    ParcelableSparseArray(Types.ParcelableSparseArray, "putSparseParcelableArray", "getSparseParcelableArray", null),
 
     //Class[]
-    StringArray(Types.StringArray, "putStringArray"),
-    CharSequenceArray(Types.CharSequenceArray, "putCharSequenceArray"),
+    StringArray(Types.StringArray, "putStringArray", "getStringArray", null),
+    CharSequenceArray(Types.CharSequenceArray, "putCharSequenceArray", "getCharSequenceArray", null),
 
     //Interface[]
-    ParcelableArray(Types.ParcelableArray, "putParcelableArray"),
+    ParcelableArray(Types.ParcelableArray, "putParcelableArray", "getParcelableArray", null),
 
     //Class
-    String(Types.String, "putString"),
-    CharSequence(Types.CharSequence, "putCharSequence"),
-    Size(Types.Size, "putSize"),
-    SizeF(Types.SizeF, "putSizeF"),
-    Binder(Types.IBinder, "putBinder"),
-    Bundle(Types.Bundle, "putBundle"),
+    String(Types.String, "putString", "getString", null),
+    CharSequence(Types.CharSequence, "putCharSequence", "getCharSequence", null),
+    Size(Types.Size, "putSize", "getSize", null),
+    SizeF(Types.SizeF, "putSizeF", "getSizeF", null),
+    IBinder(Types.IBinder, "putBinder", "getBinder", null),
+    Bundle(Types.Bundle, "putBundle", "getBundle", null),
 
     //Primitive[]
-    CharArray(Types.CharArray, "putCharArray"),
-    ByteArray(Types.ByteArray, "putByteArray"),
-    ShortArray(Types.ShortArray, "putShortArray"),
-    IntArray(Types.IntArray, "putIntArray"),
-    LongArray(Types.LongArray, "putLongArray"),
-    FloatArray(Types.FloatArray, "putFloatArray"),
-    DoubleArray(Types.DoubleArray, "putDoubleArray"),
-    BooleanArray(Types.BooleanArray, "putBooleanArray"),
+    CharArray(Types.CharArray, "putCharArray", "getCharArray", null),
+    ByteArray(Types.ByteArray, "putByteArray", "getByteArray", null),
+    ShortArray(Types.ShortArray, "putShortArray", "getShortArray", null),
+    IntArray(Types.IntArray, "putIntArray", "getIntArray", null),
+    LongArray(Types.LongArray, "putLongArray", "getLongArray", null),
+    FloatArray(Types.FloatArray, "putFloatArray", "getFloatArray", null),
+    DoubleArray(Types.DoubleArray, "putDoubleArray", "getDoubleArray", null),
+    BooleanArray(Types.BooleanArray, "putBooleanArray", "getBooleanArray", null),
 
     //Primitive
-    Char(Types.Char, "putChar"),
-    Byte(Types.Byte, "putByte"),
-    Short(Types.Short, "putShort"),
-    Int(Types.Int, "putInt"),
-    Long(Types.Long, "putLong"),
-    Float(Types.Float, "putFloat"),
-    Double(Types.Double, "putDouble"),
-    Boolean(Types.Boolean, "putBoolean"),
+    Char(Types.Char, "putChar", "getChar", "(char) 0"),
+    Byte(Types.Byte, "putByte", "getByte", "(byte) 0"),
+    Short(Types.Short, "putShort", "getShort", "(short) 0"),
+    Int(Types.Int, "putInt", "getInt", "0"),
+    Long(Types.Long, "putLong", "getLong", "0"),
+    Float(Types.Float, "putFloat", "getFloat", "0"),
+    Double(Types.Double, "putDouble", "getDouble", "0"),
+    Boolean(Types.Boolean, "putBoolean", "getBoolean", "false"),
 
     //Interface
-    Serializable(Types.Serializable, "putSerializable"),
-    Parcelable(Types.Parcelable, "putParcelable");
+    Parcelable(Types.Parcelable, "putParcelable", "getParcelable", null),
+    Serializable(Types.Serializable, "putSerializable", "getSerializable", null);
 
     public TypeName typeName;
     public String putMethodName;
-    public AnnotationSpec[] annotations;
+    public String getMethodName;
+    public String getDefaultValue;
 
-    BundleTypes(TypeName typeName, String putMethodName, AnnotationSpec... annotations) {
+    BundleTypes(TypeName typeName, String putMethodName, String getMethodName, String getDefaultValue) {
         this.typeName = typeName;
         this.putMethodName = putMethodName;
-        this.annotations = annotations;
+        this.getMethodName = getMethodName;
+        this.getDefaultValue = getDefaultValue;
     }
 
     public static BundleTypes resolve(ProcessingEnvironment processingEnv, TypeMirror typeMirror) {

@@ -12,7 +12,6 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -23,14 +22,13 @@ import javax.lang.model.element.Modifier;
  * <p>
  * Created by KazaKago on 2017/03/16.
  */
-public class ActivityFactoryGenerator {
-
-    private ProcessingEnvironment processingEnv;
+public class ActivityFactoryGenerator extends CodeGenerator {
 
     public ActivityFactoryGenerator(ProcessingEnvironment processingEnv) {
-        this.processingEnv = processingEnv;
+        super(processingEnv);
     }
 
+    @Override
     public void execute(Element element) throws IOException {
         String packageName = processingEnv.getElementUtils().getPackageOf(element).getQualifiedName().toString();
         ClassName modelClassName = ClassName.get(packageName, element.getSimpleName().toString());
@@ -38,11 +36,13 @@ public class ActivityFactoryGenerator {
 
         MethodSpec constructor = generateConstructor();
         MethodSpec createIntentMethod = generateCreateIntentMethod(element, modelClassName);
+        MethodSpec injectArgumentMethod = generateInjectArgumentMethod(element, modelClassName);
 
         TypeSpec generatedClass = TypeSpec.classBuilder(generatedClassName)
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(constructor)
                 .addMethod(createIntentMethod)
+                .addMethod(injectArgumentMethod)
                 .build();
 
         JavaFile.builder(packageName, generatedClass)
@@ -76,7 +76,6 @@ public class ActivityFactoryGenerator {
                         paramBuilder.addAnnotation(Annotations.NonNull);
                     }
                     methodBuilder.addParameter(paramBuilder.build())
-                            .addAnnotations(Arrays.asList(intentType.annotations))
                             .addStatement("intent.$L($S, $L)", intentType.putMethodName, fieldName, fieldName);
                 }
             }
@@ -84,6 +83,31 @@ public class ActivityFactoryGenerator {
         return methodBuilder.addStatement("return intent")
                 .returns(Types.Intent)
                 .build();
+    }
+
+    private MethodSpec generateInjectArgumentMethod(Element element, ClassName modelClassName) {
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("injectArgument")
+                .addModifiers(Modifier.PUBLIC)
+                .addModifiers(Modifier.STATIC)
+                .addParameter(ParameterSpec.builder(modelClassName, "activity")
+                        .addAnnotation(Annotations.NonNull)
+                        .build())
+                .addStatement("Intent intent = activity.getIntent()");
+        for (Element el : element.getEnclosedElements()) {
+            if (el.getAnnotation(FactoryParam.class) != null) {
+                IntentTypes intentType = IntentTypes.resolve(processingEnv,  el.asType());
+                if (intentType != null) {
+                    TypeName fieldType = TypeName.get(el.asType());
+                    String fieldName = el.getSimpleName().toString();
+                    if (intentType.getDefaultValue != null) {
+                        methodBuilder.addStatement("activity.$L = ($T) intent.$L($S, $L)", fieldName, fieldType, intentType.getMethodName, fieldName, intentType.getDefaultValue);
+                    } else {
+                        methodBuilder.addStatement("activity.$L = ($T) intent.$L($S)", fieldName, fieldType, intentType.getMethodName, fieldName);
+                    }
+                }
+            }
+        }
+        return methodBuilder.build();
     }
 
 }

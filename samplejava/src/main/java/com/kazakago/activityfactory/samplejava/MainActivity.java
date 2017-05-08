@@ -1,14 +1,8 @@
 package com.kazakago.activityfactory.samplejava;
 
-import android.content.Intent;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Size;
-import android.util.SizeF;
-import android.util.SparseArray;
 
 import com.kazakago.activityfactory.Factory;
 import com.kazakago.activityfactory.FactoryParam;
@@ -35,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
     @FactoryParam
     String[] _stringArray;
     @FactoryParam
-    CharSequence[] charSequenceArray;
+    CharSequence[] _charSequenceArray;
 
     //Interface[]
     @FactoryParam
@@ -87,70 +81,19 @@ public class MainActivity extends AppCompatActivity {
 
     //Interface
     @FactoryParam
-    Serializable _serializable;
-    @FactoryParam
     Parcelable _parcelable;
+    @FactoryParam
+    Serializable _serializable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        MainActivityFactory.injectArgument(this);
 
-        Intent intent = MainActivityFactory.createIntent(this, 0, "hugahuga");
-        startActivity(intent);
-        MainFragment fragment = MainFragmentFactory.createInstance(0, "hugahuga");
-    }
-
-    @NonNull
-    public static MainFragment createInstance(@NonNull ArrayList<Integer> _integerArrayList,
-                                              @NonNull ArrayList<String> _stringArrayList,
-                                              @NonNull ArrayList<CharSequence> _charSequenceArrayList,
-                                              @NonNull ArrayList<Parcelable> _parcelableArrayList,
-                                              @NonNull SparseArray<Parcelable> _parcelableSparseArray, @NonNull String[] _stringArray,
-                                              @NonNull CharSequence[] _charSequenceArray, @NonNull Parcelable[] _parcelableArray,
-                                              @NonNull String _string, @NonNull CharSequence _charSequence, @NonNull Size _size,
-                                              @NonNull SizeF _sizeF, @NonNull Bundle _bundle, @NonNull Binder _iBinder,
-                                              @NonNull char[] _charArray, @NonNull boolean[] _booleanArray, @NonNull int[] _intArray,
-                                              @NonNull long[] _longArray, @NonNull float[] _floatArray, @NonNull double[] _doubleArray,
-                                              @NonNull byte[] _byteArray, @NonNull short[] shortArray, int _int, long _long, float _float,
-                                              double _double, short _short, char _char, boolean _boolean, byte _byte,
-                                              @NonNull Serializable _serializable, @NonNull Parcelable _parcelable) {
-        MainFragment fragment = new MainFragment();
-        Bundle arguments = new Bundle();
-        arguments.putIntegerArrayList("_integerArrayList", _integerArrayList);
-        arguments.putStringArrayList("_stringArrayList", _stringArrayList);
-        arguments.putCharSequenceArrayList("_charSequenceArrayList", _charSequenceArrayList);
-        arguments.putParcelableArrayList("_parcelableArrayList", _parcelableArrayList);
-        arguments.putSparseParcelableArray("_parcelableSparseArray", _parcelableSparseArray);
-        arguments.putStringArray("_stringArray", _stringArray);
-        arguments.putCharSequenceArray("_charSequenceArray", _charSequenceArray);
-        arguments.putParcelableArray("_parcelableArray", _parcelableArray);
-        arguments.putString("_string", _string);
-        arguments.putCharSequence("_charSequence", _charSequence);
-        arguments.putSize("_size", _size);
-        arguments.putSizeF("_sizeF", _sizeF);
-        arguments.putBundle("_bundle", _bundle);
-        arguments.putBinder("_iBinder", _iBinder);
-        arguments.putCharArray("_charArray", _charArray);
-        arguments.putBooleanArray("_booleanArray", _booleanArray);
-        arguments.putIntArray("_intArray", _intArray);
-        arguments.putLongArray("_longArray", _longArray);
-        arguments.putFloatArray("_floatArray", _floatArray);
-        arguments.putDoubleArray("_doubleArray", _doubleArray);
-        arguments.putByteArray("_byteArray", _byteArray);
-        arguments.putShortArray("shortArray", shortArray);
-        arguments.putInt("_int", _int);
-        arguments.putLong("_long", _long);
-        arguments.putFloat("_float", _float);
-        arguments.putDouble("_double", _double);
-        arguments.putShort("_short", _short);
-        arguments.putChar("_char", _char);
-        arguments.putBoolean("_boolean", _boolean);
-        arguments.putByte("_byte", _byte);
-        arguments.putSerializable("_serializable", _serializable);
-        arguments.putParcelable("_parcelable", _parcelable);
-        fragment.setArguments(arguments);
-        return fragment;
+//        Intent intent = MainActivityFactory.createIntent(this, 0, "hugahuga");
+//        startActivity(intent);
+//        MainFragment fragment = MainFragmentFactory.createInstance(0, "hugahuga");
     }
 
 }

@@ -101,9 +101,9 @@ public class MainFragment extends Fragment {
     byte _byte;
 
     @FactoryParam
-    Serializable _serializable;
-    @FactoryParam
     Parcelable _parcelable;
+    @FactoryParam
+    Serializable _serializable;
 
     @Nullable
     @Override
