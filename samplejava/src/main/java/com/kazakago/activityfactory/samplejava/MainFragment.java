@@ -18,9 +18,6 @@ import com.kazakago.activityfactory.FactoryParam;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
- * Created by tamura_k on 2017/03/16.
- */
 @Factory
 public class MainFragment extends Fragment {
 
