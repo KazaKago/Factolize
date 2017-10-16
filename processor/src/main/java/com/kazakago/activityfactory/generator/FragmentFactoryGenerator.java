@@ -36,13 +36,15 @@ public class FragmentFactoryGenerator extends CodeGenerator {
 
         MethodSpec constructor = generateConstructor();
         MethodSpec createIntentMethod = generateCreateIntentMethod(element, modelClassName);
-        MethodSpec injectArgumentMethod = generateInjectArgumentMethod(element, modelClassName);
+        MethodSpec injectArgumentMethod = generateInjectArgumentMethod(modelClassName);
+        MethodSpec injectArgumentWithSavedInstanceStateMethod = generateInjectArgumentMethodWithSavedInstanceState(element, modelClassName);
 
         TypeSpec generatedClass = TypeSpec.classBuilder(generatedClassName)
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(constructor)
                 .addMethod(createIntentMethod)
                 .addMethod(injectArgumentMethod)
+                .addMethod(injectArgumentWithSavedInstanceStateMethod)
                 .build();
 
         JavaFile.builder(packageName, generatedClass)
@@ -84,7 +86,18 @@ public class FragmentFactoryGenerator extends CodeGenerator {
                 .build();
     }
 
-    private MethodSpec generateInjectArgumentMethod(Element element, ClassName modelClassName) {
+    private MethodSpec generateInjectArgumentMethod(ClassName modelClassName) {
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("injectArgument")
+                .addModifiers(Modifier.PUBLIC)
+                .addModifiers(Modifier.STATIC)
+                .addParameter(ParameterSpec.builder(modelClassName, "fragment")
+                        .addAnnotation(Annotations.NonNull)
+                        .build())
+                .addStatement("injectArgument(fragment, null)");
+        return methodBuilder.build();
+    }
+
+    private MethodSpec generateInjectArgumentMethodWithSavedInstanceState(Element element, ClassName modelClassName) {
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("injectArgument")
                 .addModifiers(Modifier.PUBLIC)
                 .addModifiers(Modifier.STATIC)
@@ -94,20 +107,25 @@ public class FragmentFactoryGenerator extends CodeGenerator {
                 .addParameter(ParameterSpec.builder(Types.Bundle, "savedInstanceState")
                         .addAnnotation(Annotations.Nullable)
                         .build());
+        methodBuilder.addStatement("Bundle arguments = fragment.getArguments()");
+        methodBuilder.beginControlFlow("if (arguments != null && savedInstanceState == null)");
         for (Element el : element.getEnclosedElements()) {
             if (el.getAnnotation(FactoryParam.class) != null) {
                 BundleTypes bundleType = BundleTypes.resolve(processingEnv,  el.asType());
                 if (bundleType != null) {
                     TypeName fieldType = TypeName.get(el.asType());
                     String fieldName = el.getSimpleName().toString();
+                    methodBuilder.beginControlFlow("if (arguments.containsKey($S))", fieldName);
                     if (bundleType.getDefaultValue != null) {
-                        methodBuilder.addStatement("fragment.$L = ($T) savedInstanceState.$L($S, $L)", fieldName, fieldType, bundleType.getMethodName, fieldName, bundleType.getDefaultValue);
+                        methodBuilder.addStatement("fragment.$L = ($T) arguments.$L($S, $L)", fieldName, fieldType, bundleType.getMethodName, fieldName, bundleType.getDefaultValue);
                     } else {
-                        methodBuilder.addStatement("fragment.$L = ($T) savedInstanceState.$L($S)", fieldName, fieldType, bundleType.getMethodName, fieldName);
+                        methodBuilder.addStatement("fragment.$L = ($T) arguments.$L($S)", fieldName, fieldType, bundleType.getMethodName, fieldName);
                     }
+                    methodBuilder.endControlFlow();
                 }
             }
         }
+        methodBuilder.endControlFlow();
         return methodBuilder.build();
     }
 

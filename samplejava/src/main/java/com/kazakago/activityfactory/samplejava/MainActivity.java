@@ -89,10 +89,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        MainActivityFactory.injectArgument(this);
+        MainActivityFactory.injectArgument(this, savedInstanceState);
 
 //        Intent intent = MainActivityFactory.createIntent(this, 0, "hugahuga");
-//        startActivity(intent);
 //        MainFragment fragment = MainFragmentFactory.createInstance(0, "hugahuga");
     }
 

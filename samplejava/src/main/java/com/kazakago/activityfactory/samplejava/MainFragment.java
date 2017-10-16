@@ -81,6 +81,12 @@ public class MainFragment extends Fragment {
 
     //Primitive
     @FactoryParam
+    char _char;
+    @FactoryParam
+    byte _byte;
+    @FactoryParam
+    short _short;
+    @FactoryParam
     int _int;
     @FactoryParam
     long _long;
@@ -89,24 +95,24 @@ public class MainFragment extends Fragment {
     @FactoryParam
     double _double;
     @FactoryParam
-    short _short;
-    @FactoryParam
-    char _char;
-    @FactoryParam
     boolean _boolean;
-    @FactoryParam
-    byte _byte;
 
+    //Interface
     @FactoryParam
     Parcelable _parcelable;
     @FactoryParam
     Serializable _serializable;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        MainFragmentFactory.injectArgument(this, savedInstanceState);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main, container, false);
-        return view;
+        return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
 }

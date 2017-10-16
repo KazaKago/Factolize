@@ -36,13 +36,14 @@ public class ActivityFactoryGenerator extends CodeGenerator {
 
         MethodSpec constructor = generateConstructor();
         MethodSpec createIntentMethod = generateCreateIntentMethod(element, modelClassName);
-        MethodSpec injectArgumentMethod = generateInjectArgumentMethod(element, modelClassName);
-
+        MethodSpec injectArgumentMethod = generateInjectArgumentMethod(modelClassName);
+        MethodSpec injectArgumentWithSavedInstanceStateMethod = generateInjectArgumentMethodWithSavedInstanceState(element, modelClassName);
         TypeSpec generatedClass = TypeSpec.classBuilder(generatedClassName)
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(constructor)
                 .addMethod(createIntentMethod)
                 .addMethod(injectArgumentMethod)
+                .addMethod(injectArgumentWithSavedInstanceStateMethod)
                 .build();
 
         JavaFile.builder(packageName, generatedClass)
@@ -85,28 +86,46 @@ public class ActivityFactoryGenerator extends CodeGenerator {
                 .build();
     }
 
-    private MethodSpec generateInjectArgumentMethod(Element element, ClassName modelClassName) {
+    private MethodSpec generateInjectArgumentMethod(ClassName modelClassName) {
         MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("injectArgument")
                 .addModifiers(Modifier.PUBLIC)
                 .addModifiers(Modifier.STATIC)
                 .addParameter(ParameterSpec.builder(modelClassName, "activity")
                         .addAnnotation(Annotations.NonNull)
                         .build())
+                .addStatement("injectArgument(activity, null)");
+        return methodBuilder.build();
+    }
+
+    private MethodSpec generateInjectArgumentMethodWithSavedInstanceState(Element element, ClassName modelClassName) {
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("injectArgument")
+                .addModifiers(Modifier.PUBLIC)
+                .addModifiers(Modifier.STATIC)
+                .addParameter(ParameterSpec.builder(modelClassName, "activity")
+                        .addAnnotation(Annotations.NonNull)
+                        .build())
+                .addParameter(ParameterSpec.builder(Types.Bundle, "savedInstanceState")
+                        .addAnnotation(Annotations.Nullable)
+                        .build())
                 .addStatement("Intent intent = activity.getIntent()");
+        methodBuilder.beginControlFlow("if (savedInstanceState == null)");
         for (Element el : element.getEnclosedElements()) {
             if (el.getAnnotation(FactoryParam.class) != null) {
                 IntentTypes intentType = IntentTypes.resolve(processingEnv,  el.asType());
                 if (intentType != null) {
                     TypeName fieldType = TypeName.get(el.asType());
                     String fieldName = el.getSimpleName().toString();
+                    methodBuilder.beginControlFlow("if (intent.hasExtra($S))", fieldName);
                     if (intentType.getDefaultValue != null) {
                         methodBuilder.addStatement("activity.$L = ($T) intent.$L($S, $L)", fieldName, fieldType, intentType.getMethodName, fieldName, intentType.getDefaultValue);
                     } else {
                         methodBuilder.addStatement("activity.$L = ($T) intent.$L($S)", fieldName, fieldType, intentType.getMethodName, fieldName);
                     }
+                    methodBuilder.endControlFlow();
                 }
             }
         }
+        methodBuilder.endControlFlow();
         return methodBuilder.build();
     }
 
