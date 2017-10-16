@@ -68,14 +68,19 @@ public class ActivityFactoryGenerator extends CodeGenerator {
                 .addStatement("$T intent = new $T(context, $L.class)", Types.Intent, Types.Intent, modelClassName.simpleName())
                 .addStatement("Bundle arguments = new Bundle()");
         for (Element el : element.getEnclosedElements()) {
-            if (el.getAnnotation(FactoryParam.class) != null) {
-                BundleTypes bundleTypes = BundleTypes.resolve(processingEnv,  el.asType());
+            FactoryParam factoryParamAnnotation = el.getAnnotation(FactoryParam.class);
+            if (factoryParamAnnotation != null) {
+                BundleTypes bundleTypes = BundleTypes.resolve(processingEnv, el.asType());
                 if (bundleTypes != null) {
                     TypeName fieldType = TypeName.get(el.asType());
                     String fieldName = el.getSimpleName().toString();
                     ParameterSpec.Builder paramBuilder = ParameterSpec.builder(fieldType, fieldName);
                     if (!fieldType.isPrimitive()) {
-                        paramBuilder.addAnnotation(Annotations.NonNull);
+                        if (factoryParamAnnotation.required()) {
+                            paramBuilder.addAnnotation(Annotations.NonNull);
+                        } else {
+                            paramBuilder.addAnnotation(Annotations.Nullable);
+                        }
                     }
                     methodBuilder.addParameter(paramBuilder.build())
                             .addStatement("arguments.$L($S, $L)", bundleTypes.putMethodName, fieldName, fieldName);
@@ -113,7 +118,7 @@ public class ActivityFactoryGenerator extends CodeGenerator {
         methodBuilder.beginControlFlow("if (arguments != null && savedInstanceState == null)");
         for (Element el : element.getEnclosedElements()) {
             if (el.getAnnotation(FactoryParam.class) != null) {
-                BundleTypes bundleTypes = BundleTypes.resolve(processingEnv,  el.asType());
+                BundleTypes bundleTypes = BundleTypes.resolve(processingEnv, el.asType());
                 if (bundleTypes != null) {
                     TypeName fieldType = TypeName.get(el.asType());
                     String fieldName = el.getSimpleName().toString();
