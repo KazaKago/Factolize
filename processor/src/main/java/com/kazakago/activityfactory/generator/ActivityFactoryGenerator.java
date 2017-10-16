@@ -2,7 +2,7 @@ package com.kazakago.activityfactory.generator;
 
 import com.kazakago.activityfactory.FactoryParam;
 import com.kazakago.activityfactory.constants.Annotations;
-import com.kazakago.activityfactory.constants.IntentTypes;
+import com.kazakago.activityfactory.constants.BundleTypes;
 import com.kazakago.activityfactory.constants.Types;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
@@ -65,11 +65,12 @@ public class ActivityFactoryGenerator extends CodeGenerator {
                 .addParameter(ParameterSpec.builder(Types.Context, "context")
                         .addAnnotation(Annotations.NonNull)
                         .build())
-                .addStatement("$T intent = new $T(context, $L.class)", Types.Intent, Types.Intent, modelClassName.simpleName());
+                .addStatement("$T intent = new $T(context, $L.class)", Types.Intent, Types.Intent, modelClassName.simpleName())
+                .addStatement("Bundle arguments = new Bundle()");
         for (Element el : element.getEnclosedElements()) {
             if (el.getAnnotation(FactoryParam.class) != null) {
-                IntentTypes intentType = IntentTypes.resolve(processingEnv,  el.asType());
-                if (intentType != null) {
+                BundleTypes bundleTypes = BundleTypes.resolve(processingEnv,  el.asType());
+                if (bundleTypes != null) {
                     TypeName fieldType = TypeName.get(el.asType());
                     String fieldName = el.getSimpleName().toString();
                     ParameterSpec.Builder paramBuilder = ParameterSpec.builder(fieldType, fieldName);
@@ -77,11 +78,12 @@ public class ActivityFactoryGenerator extends CodeGenerator {
                         paramBuilder.addAnnotation(Annotations.NonNull);
                     }
                     methodBuilder.addParameter(paramBuilder.build())
-                            .addStatement("intent.$L($S, $L)", intentType.putMethodName, fieldName, fieldName);
+                            .addStatement("arguments.$L($S, $L)", bundleTypes.putMethodName, fieldName, fieldName);
                 }
             }
         }
-        return methodBuilder.addStatement("return intent")
+        return methodBuilder.addStatement("intent.putExtras(arguments)")
+                .addStatement("return intent")
                 .returns(Types.Intent)
                 .build();
     }
@@ -107,19 +109,19 @@ public class ActivityFactoryGenerator extends CodeGenerator {
                 .addParameter(ParameterSpec.builder(Types.Bundle, "savedInstanceState")
                         .addAnnotation(Annotations.Nullable)
                         .build())
-                .addStatement("Intent intent = activity.getIntent()");
-        methodBuilder.beginControlFlow("if (savedInstanceState == null)");
+                .addStatement("Bundle arguments = activity.getIntent().getExtras()");
+        methodBuilder.beginControlFlow("if (arguments != null && savedInstanceState == null)");
         for (Element el : element.getEnclosedElements()) {
             if (el.getAnnotation(FactoryParam.class) != null) {
-                IntentTypes intentType = IntentTypes.resolve(processingEnv,  el.asType());
-                if (intentType != null) {
+                BundleTypes bundleTypes = BundleTypes.resolve(processingEnv,  el.asType());
+                if (bundleTypes != null) {
                     TypeName fieldType = TypeName.get(el.asType());
                     String fieldName = el.getSimpleName().toString();
-                    methodBuilder.beginControlFlow("if (intent.hasExtra($S))", fieldName);
-                    if (intentType.getDefaultValue != null) {
-                        methodBuilder.addStatement("activity.$L = ($T) intent.$L($S, $L)", fieldName, fieldType, intentType.getMethodName, fieldName, intentType.getDefaultValue);
+                    methodBuilder.beginControlFlow("if (arguments.containsKey($S))", fieldName);
+                    if (bundleTypes.getDefaultValue != null) {
+                        methodBuilder.addStatement("activity.$L = ($T) arguments.$L($S, $L)", fieldName, fieldType, bundleTypes.getMethodName, fieldName, bundleTypes.getDefaultValue);
                     } else {
-                        methodBuilder.addStatement("activity.$L = ($T) intent.$L($S)", fieldName, fieldType, intentType.getMethodName, fieldName);
+                        methodBuilder.addStatement("activity.$L = ($T) arguments.$L($S)", fieldName, fieldType, bundleTypes.getMethodName, fieldName);
                     }
                     methodBuilder.endControlFlow();
                 }

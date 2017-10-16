@@ -6,9 +6,6 @@ import com.squareup.javapoet.TypeName;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.type.TypeMirror;
 
-/**
- * Created by Kensuke on 2017/03/20.
- */
 public enum BundleTypes {
 
     //ArrayList<Class>
