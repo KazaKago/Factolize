@@ -12,6 +12,8 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -36,12 +38,14 @@ public class ActivityFactoryGenerator extends CodeGenerator {
 
         MethodSpec constructor = generateConstructor();
         MethodSpec createIntentMethod = generateCreateIntentMethod(element, modelClassName);
+        List<MethodSpec> createIntentOverloadMethods = generateCreateIntentOverloadMethods(element);
         MethodSpec injectArgumentMethod = generateInjectArgumentMethod(modelClassName);
         MethodSpec injectArgumentWithSavedInstanceStateMethod = generateInjectArgumentMethodWithSavedInstanceState(element, modelClassName);
         TypeSpec generatedClass = TypeSpec.classBuilder(generatedClassName)
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(constructor)
                 .addMethod(createIntentMethod)
+                .addMethods(createIntentOverloadMethods)
                 .addMethod(injectArgumentMethod)
                 .addMethod(injectArgumentWithSavedInstanceStateMethod)
                 .build();
@@ -91,6 +95,86 @@ public class ActivityFactoryGenerator extends CodeGenerator {
                 .addStatement("return intent")
                 .returns(Types.Intent)
                 .build();
+    }
+
+    private List<MethodSpec> generateCreateIntentOverloadMethods(Element element) {
+        List<MethodSpec> methodSpecs = new ArrayList<>();
+        int nonRequiredCount = 0;
+        for (Element el : element.getEnclosedElements()) {
+            FactoryParam factoryParamAnnotation = el.getAnnotation(FactoryParam.class);
+            if (factoryParamAnnotation != null && !factoryParamAnnotation.required()) {
+                nonRequiredCount++;
+            }
+        }
+        for (int i = 0; i < nonRequiredCount; i++) {
+            methodSpecs.add(generateCreateIntentOverloadMethod(element, i));
+        }
+        return methodSpecs;
+    }
+
+    private MethodSpec generateCreateIntentOverloadMethod(Element element, final int nonRequiredCount) {
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("createIntent")
+                .addModifiers(Modifier.PUBLIC)
+                .addModifiers(Modifier.STATIC)
+                .addAnnotation(Annotations.NonNull)
+                .addParameter(ParameterSpec.builder(Types.Context, "context")
+                        .addAnnotation(Annotations.NonNull)
+                        .build());
+        int currentNonRequiredCount = 0;
+        for (Element el : element.getEnclosedElements()) {
+            FactoryParam factoryParamAnnotation = el.getAnnotation(FactoryParam.class);
+            if (factoryParamAnnotation != null) {
+                BundleTypes bundleTypes = BundleTypes.resolve(processingEnv, el.asType());
+                if (bundleTypes != null) {
+                    TypeName fieldType = TypeName.get(el.asType());
+                    String fieldName = el.getSimpleName().toString();
+                    ParameterSpec.Builder paramBuilder = ParameterSpec.builder(fieldType, fieldName);
+                    if (!fieldType.isPrimitive()) {
+                        if (factoryParamAnnotation.required()) {
+                            paramBuilder.addAnnotation(Annotations.NonNull);
+                        } else {
+                            paramBuilder.addAnnotation(Annotations.Nullable);
+                        }
+                    }
+                    if (factoryParamAnnotation.required()) {
+                        methodBuilder.addParameter(paramBuilder.build());
+                    } else if (!factoryParamAnnotation.required() && currentNonRequiredCount < nonRequiredCount) {
+                        methodBuilder.addParameter(paramBuilder.build());
+                        currentNonRequiredCount++;
+                    }
+                }
+            }
+        }
+        currentNonRequiredCount = 0;
+        StringBuilder parameter = new StringBuilder();
+        for (Element el : element.getEnclosedElements()) {
+            FactoryParam factoryParamAnnotation = el.getAnnotation(FactoryParam.class);
+            if (factoryParamAnnotation != null) {
+                BundleTypes bundleTypes = BundleTypes.resolve(processingEnv, el.asType());
+                if (bundleTypes != null) {
+                    TypeName fieldType = TypeName.get(el.asType());
+                    String fieldName = el.getSimpleName().toString();
+                    if (0 < parameter.length()) {
+                        parameter.append(", ");
+                    }
+                    if (factoryParamAnnotation.required()) {
+                        parameter.append(fieldName);
+                    } else if (!factoryParamAnnotation.required() && currentNonRequiredCount < nonRequiredCount) {
+                        parameter.append(fieldName);
+                        currentNonRequiredCount++;
+                    } else {
+                        if (!fieldType.isPrimitive()) {
+                            parameter.append("null");
+                        } else {
+                            parameter.append(bundleTypes.getDefaultValue);
+                        }
+                    }
+                }
+            }
+        }
+        methodBuilder.addStatement("return createIntent(context, $L)", parameter.toString())
+                .returns(Types.Intent);
+        return methodBuilder.build();
     }
 
     private MethodSpec generateInjectArgumentMethod(ClassName modelClassName) {
