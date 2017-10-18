@@ -12,6 +12,8 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -35,14 +37,16 @@ public class FragmentFactoryGenerator extends CodeGenerator {
         ClassName generatedClassName = ClassName.get(packageName, element.getSimpleName().toString() + "Factory");
 
         MethodSpec constructor = generateConstructor();
-        MethodSpec createIntentMethod = generateCreateIntentMethod(element, modelClassName);
+        MethodSpec createInstanceMethod = generateCreateIntentMethod(element, modelClassName);
+        List<MethodSpec> createInstanceOverloadMethods = generateCreateIntentOverloadMethods(element, modelClassName);
         MethodSpec injectArgumentMethod = generateInjectArgumentMethod(modelClassName);
         MethodSpec injectArgumentWithSavedInstanceStateMethod = generateInjectArgumentMethodWithSavedInstanceState(element, modelClassName);
 
         TypeSpec generatedClass = TypeSpec.classBuilder(generatedClassName)
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(constructor)
-                .addMethod(createIntentMethod)
+                .addMethod(createInstanceMethod)
+                .addMethods(createInstanceOverloadMethods)
                 .addMethod(injectArgumentMethod)
                 .addMethod(injectArgumentWithSavedInstanceStateMethod)
                 .build();
@@ -68,20 +72,20 @@ public class FragmentFactoryGenerator extends CodeGenerator {
         for (Element el : element.getEnclosedElements()) {
             FactoryParam factoryParamAnnotation = el.getAnnotation(FactoryParam.class);
             if (factoryParamAnnotation != null) {
-                BundleTypes bundleTypes = BundleTypes.resolve(processingEnv,  el.asType());
+                BundleTypes bundleTypes = BundleTypes.resolve(processingEnv, el.asType());
                 if (bundleTypes != null) {
                     TypeName fieldType = TypeName.get(el.asType());
                     String fieldName = el.getSimpleName().toString();
-                    ParameterSpec.Builder paramBuilder = ParameterSpec.builder(fieldType, fieldName);
-                    if (!fieldType.isPrimitive()) {
-                        if (factoryParamAnnotation.required()) {
-                            paramBuilder.addAnnotation(Annotations.NonNull);
-                        } else {
-                            paramBuilder.addAnnotation(Annotations.Nullable);
-                        }
+                    methodBuilder.beginControlFlow("if ($L != null)", fieldName);
+                    ParameterSpec.Builder paramBuilder = ParameterSpec.builder(fieldType.box(), fieldName);
+                    if (factoryParamAnnotation.required()) {
+                        paramBuilder.addAnnotation(Annotations.NonNull);
+                    } else {
+                        paramBuilder.addAnnotation(Annotations.Nullable);
                     }
                     methodBuilder.addParameter(paramBuilder.build())
                             .addStatement("arguments.$L($S, $L)", bundleTypes.putMethodName, fieldName, fieldName);
+                    methodBuilder.endControlFlow();
                 }
             }
         }
@@ -89,6 +93,76 @@ public class FragmentFactoryGenerator extends CodeGenerator {
                 .addStatement("return fragment")
                 .returns(modelClassName)
                 .build();
+    }
+
+    private List<MethodSpec> generateCreateIntentOverloadMethods(Element element, ClassName modelClassName) {
+        List<MethodSpec> methodSpecs = new ArrayList<>();
+        int nonRequiredCount = 0;
+        for (Element el : element.getEnclosedElements()) {
+            FactoryParam factoryParamAnnotation = el.getAnnotation(FactoryParam.class);
+            if (factoryParamAnnotation != null && !factoryParamAnnotation.required()) {
+                nonRequiredCount++;
+            }
+        }
+        for (int i = 0; i < nonRequiredCount; i++) {
+            methodSpecs.add(generateCreateIntentOverloadMethod(element, modelClassName, i));
+        }
+        return methodSpecs;
+    }
+
+    private MethodSpec generateCreateIntentOverloadMethod(Element element, ClassName modelClassName, final int nonRequiredCount) {
+        MethodSpec.Builder methodBuilder = MethodSpec.methodBuilder("createInstance")
+                .addModifiers(Modifier.PUBLIC)
+                .addModifiers(Modifier.STATIC)
+                .addAnnotation(Annotations.NonNull);
+        int currentNonRequiredCount = 0;
+        for (Element el : element.getEnclosedElements()) {
+            FactoryParam factoryParamAnnotation = el.getAnnotation(FactoryParam.class);
+            if (factoryParamAnnotation != null) {
+                BundleTypes bundleTypes = BundleTypes.resolve(processingEnv, el.asType());
+                if (bundleTypes != null) {
+                    TypeName fieldType = TypeName.get(el.asType());
+                    String fieldName = el.getSimpleName().toString();
+                    ParameterSpec.Builder paramBuilder = ParameterSpec.builder(fieldType.box(), fieldName);
+                    if (factoryParamAnnotation.required()) {
+                        paramBuilder.addAnnotation(Annotations.NonNull);
+                    } else {
+                        paramBuilder.addAnnotation(Annotations.Nullable);
+                    }
+                    if (factoryParamAnnotation.required()) {
+                        methodBuilder.addParameter(paramBuilder.build());
+                    } else if (!factoryParamAnnotation.required() && currentNonRequiredCount < nonRequiredCount) {
+                        methodBuilder.addParameter(paramBuilder.build());
+                        currentNonRequiredCount++;
+                    }
+                }
+            }
+        }
+        currentNonRequiredCount = 0;
+        StringBuilder parameter = new StringBuilder();
+        for (Element el : element.getEnclosedElements()) {
+            FactoryParam factoryParamAnnotation = el.getAnnotation(FactoryParam.class);
+            if (factoryParamAnnotation != null) {
+                BundleTypes bundleTypes = BundleTypes.resolve(processingEnv, el.asType());
+                if (bundleTypes != null) {
+                    String fieldName = el.getSimpleName().toString();
+                    if (0 < parameter.length()) {
+                        parameter.append(", ");
+                    }
+                    if (factoryParamAnnotation.required()) {
+                        parameter.append(fieldName);
+                    } else if (!factoryParamAnnotation.required() && currentNonRequiredCount < nonRequiredCount) {
+                        parameter.append(fieldName);
+                        currentNonRequiredCount++;
+                    } else {
+                        parameter.append("null");
+                    }
+                }
+            }
+        }
+        methodBuilder.addStatement("return createInstance($L)", parameter.toString())
+                .returns(modelClassName);
+        return methodBuilder.build();
     }
 
     private MethodSpec generateInjectArgumentMethod(ClassName modelClassName) {
@@ -116,7 +190,7 @@ public class FragmentFactoryGenerator extends CodeGenerator {
         methodBuilder.beginControlFlow("if (arguments != null && savedInstanceState == null)");
         for (Element el : element.getEnclosedElements()) {
             if (el.getAnnotation(FactoryParam.class) != null) {
-                BundleTypes bundleType = BundleTypes.resolve(processingEnv,  el.asType());
+                BundleTypes bundleType = BundleTypes.resolve(processingEnv, el.asType());
                 if (bundleType != null) {
                     TypeName fieldType = TypeName.get(el.asType());
                     String fieldName = el.getSimpleName().toString();

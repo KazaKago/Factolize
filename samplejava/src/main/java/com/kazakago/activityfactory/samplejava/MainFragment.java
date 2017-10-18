@@ -22,85 +22,85 @@ import java.util.ArrayList;
 public class MainFragment extends Fragment {
 
     //ArrayList<Class>
-    @FactoryParam
+    @FactoryParam(required = false)
     ArrayList<Integer> _integerArrayList;
-    @FactoryParam
+    @FactoryParam(required = false)
     ArrayList<String> _stringArrayList;
-    @FactoryParam
+    @FactoryParam(required = false)
     ArrayList<CharSequence> _charSequenceArrayList;
 
     //ArrayList<Interface>
-    @FactoryParam
+    @FactoryParam(required = false)
     ArrayList<Parcelable> _parcelableArrayList;
 
     //SparseArray<Interface>
-    @FactoryParam
+    @FactoryParam(required = false)
     SparseArray<Parcelable> _parcelableSparseArray;
 
     //Class[]
-    @FactoryParam
+    @FactoryParam(required = false)
     String[] _stringArray;
-    @FactoryParam
+    @FactoryParam(required = false)
     CharSequence[] _charSequenceArray;
 
     //Interface[]
-    @FactoryParam
+    @FactoryParam(required = false)
     Parcelable[] _parcelableArray;
 
     //Class
-    @FactoryParam
+    @FactoryParam(required = false)
     String _string;
-    @FactoryParam
+    @FactoryParam(required = false)
     CharSequence _charSequence;
-    @FactoryParam
+    @FactoryParam(required = false)
     Size _size;
-    @FactoryParam
+    @FactoryParam(required = false)
     SizeF _sizeF;
-    @FactoryParam
+    @FactoryParam(required = false)
     Bundle _bundle;
-    @FactoryParam
+    @FactoryParam(required = false)
     Binder _iBinder;
 
     //Primitive[]
-    @FactoryParam
+    @FactoryParam(required = false)
     char[] _charArray;
-    @FactoryParam
+    @FactoryParam(required = false)
     boolean[] _booleanArray;
-    @FactoryParam
+    @FactoryParam(required = false)
     int[] _intArray;
-    @FactoryParam
+    @FactoryParam(required = false)
     long[] _longArray;
-    @FactoryParam
+    @FactoryParam(required = false)
     float[] _floatArray;
-    @FactoryParam
+    @FactoryParam(required = false)
     double[] _doubleArray;
-    @FactoryParam
+    @FactoryParam(required = false)
     byte[] _byteArray;
-    @FactoryParam
+    @FactoryParam(required = false)
     short[] shortArray;
 
     //Primitive
-    @FactoryParam
+    @FactoryParam(required = false)
     char _char;
-    @FactoryParam
+    @FactoryParam(required = false)
     byte _byte;
-    @FactoryParam
+    @FactoryParam(required = false)
     short _short;
-    @FactoryParam
+    @FactoryParam(required = false)
     int _int;
-    @FactoryParam
+    @FactoryParam(required = false)
     long _long;
-    @FactoryParam
+    @FactoryParam(required = false)
     float _float;
-    @FactoryParam
+    @FactoryParam(required = false)
     double _double;
-    @FactoryParam
+    @FactoryParam(required = false)
     boolean _boolean;
 
     //Interface
-    @FactoryParam
+    @FactoryParam(required = false)
     Parcelable _parcelable;
-    @FactoryParam
+    @FactoryParam(required = false)
     Serializable _serializable;
 
     @Override

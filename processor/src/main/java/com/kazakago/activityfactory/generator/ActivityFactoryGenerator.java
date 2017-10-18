@@ -78,16 +78,16 @@ public class ActivityFactoryGenerator extends CodeGenerator {
                 if (bundleTypes != null) {
                     TypeName fieldType = TypeName.get(el.asType());
                     String fieldName = el.getSimpleName().toString();
-                    ParameterSpec.Builder paramBuilder = ParameterSpec.builder(fieldType, fieldName);
-                    if (!fieldType.isPrimitive()) {
-                        if (factoryParamAnnotation.required()) {
-                            paramBuilder.addAnnotation(Annotations.NonNull);
-                        } else {
-                            paramBuilder.addAnnotation(Annotations.Nullable);
-                        }
+                    methodBuilder.beginControlFlow("if ($L != null)", fieldName);
+                    ParameterSpec.Builder paramBuilder = ParameterSpec.builder(fieldType.box(), fieldName);
+                    if (factoryParamAnnotation.required()) {
+                        paramBuilder.addAnnotation(Annotations.NonNull);
+                    } else {
+                        paramBuilder.addAnnotation(Annotations.Nullable);
                     }
                     methodBuilder.addParameter(paramBuilder.build())
                             .addStatement("arguments.$L($S, $L)", bundleTypes.putMethodName, fieldName, fieldName);
+                    methodBuilder.endControlFlow();
                 }
             }
         }
@@ -128,13 +128,11 @@ public class ActivityFactoryGenerator extends CodeGenerator {
                 if (bundleTypes != null) {
                     TypeName fieldType = TypeName.get(el.asType());
                     String fieldName = el.getSimpleName().toString();
-                    ParameterSpec.Builder paramBuilder = ParameterSpec.builder(fieldType, fieldName);
-                    if (!fieldType.isPrimitive()) {
-                        if (factoryParamAnnotation.required()) {
-                            paramBuilder.addAnnotation(Annotations.NonNull);
-                        } else {
-                            paramBuilder.addAnnotation(Annotations.Nullable);
-                        }
+                    ParameterSpec.Builder paramBuilder = ParameterSpec.builder(fieldType.box(), fieldName);
+                    if (factoryParamAnnotation.required()) {
+                        paramBuilder.addAnnotation(Annotations.NonNull);
+                    } else {
+                        paramBuilder.addAnnotation(Annotations.Nullable);
                     }
                     if (factoryParamAnnotation.required()) {
                         methodBuilder.addParameter(paramBuilder.build());
@@ -152,7 +150,6 @@ public class ActivityFactoryGenerator extends CodeGenerator {
             if (factoryParamAnnotation != null) {
                 BundleTypes bundleTypes = BundleTypes.resolve(processingEnv, el.asType());
                 if (bundleTypes != null) {
-                    TypeName fieldType = TypeName.get(el.asType());
                     String fieldName = el.getSimpleName().toString();
                     if (0 < parameter.length()) {
                         parameter.append(", ");
@@ -163,11 +160,7 @@ public class ActivityFactoryGenerator extends CodeGenerator {
                         parameter.append(fieldName);
                         currentNonRequiredCount++;
                     } else {
-                        if (!fieldType.isPrimitive()) {
-                            parameter.append("null");
-                        } else {
-                            parameter.append(bundleTypes.getDefaultValue);
-                        }
+                        parameter.append("null");
                     }
                 }
             }

@@ -1,8 +1,15 @@
 package com.kazakago.activityfactory.samplejava;
 
+import android.content.Intent;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Size;
+import android.util.SizeF;
+import android.util.SparseArray;
+import android.view.View;
+import android.widget.Button;
 
 import com.kazakago.activityfactory.Factory;
 import com.kazakago.activityfactory.FactoryParam;
@@ -14,75 +21,85 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     //ArrayList<Class>
-    @FactoryParam
+    @FactoryParam(required = false)
     ArrayList<Integer> _integerArrayList;
-    @FactoryParam
+    @FactoryParam(required = false)
     ArrayList<String> _stringArrayList;
-    @FactoryParam
+    @FactoryParam(required = false)
     ArrayList<CharSequence> _charSequenceArrayList;
 
     //ArrayList<Interface>
-    @FactoryParam
+    @FactoryParam(required = false)
     ArrayList<Parcelable> _parcelableArrayList;
 
+    //SparseArray<Interface>
+    @FactoryParam(required = false)
+    SparseArray<Parcelable> _parcelableSparseArray;
+
     //Class[]
-    @FactoryParam
+    @FactoryParam(required = false)
     String[] _stringArray;
-    @FactoryParam
+    @FactoryParam(required = false)
     CharSequence[] _charSequenceArray;
 
     //Interface[]
-    @FactoryParam
+    @FactoryParam(required = false)
     Parcelable[] _parcelableArray;
 
     //Class
-    @FactoryParam
+    @FactoryParam(required = false)
     String _string;
-    @FactoryParam
+    @FactoryParam(required = false)
     CharSequence _charSequence;
-    @FactoryParam
+    @FactoryParam(required = false)
+    Size _size;
+    @FactoryParam(required = false)
+    SizeF _sizeF;
+    @FactoryParam(required = false)
     Bundle _bundle;
+    @FactoryParam(required = false)
+    Binder _iBinder;
 
     //Primitive[]
-    @FactoryParam
+    @FactoryParam(required = false)
     char[] _charArray;
-    @FactoryParam
-    byte[] _byteArray;
-    @FactoryParam
-    short[] _shortArray;
-    @FactoryParam
-    int[] _intArray;
-    @FactoryParam
-    long[] _longArray;
-    @FactoryParam
-    float[] _floatArray;
-    @FactoryParam
-    double[] _doubleArray;
-    @FactoryParam
+    @FactoryParam(required = false)
     boolean[] _booleanArray;
+    @FactoryParam(required = false)
+    int[] _intArray;
+    @FactoryParam(required = false)
+    long[] _longArray;
+    @FactoryParam(required = false)
+    float[] _floatArray;
+    @FactoryParam(required = false)
+    double[] _doubleArray;
+    @FactoryParam(required = false)
+    byte[] _byteArray;
+    @FactoryParam(required = false)
+    short[] shortArray;
 
     //Primitive
-    @FactoryParam
+    @FactoryParam(required = false)
     char _char;
-    @FactoryParam
+    @FactoryParam(required = false)
     byte _byte;
-    @FactoryParam
+    @FactoryParam(required = false)
     short _short;
-    @FactoryParam
+    @FactoryParam(required = false)
     int _int;
-    @FactoryParam
+    @FactoryParam(required = false)
     long _long;
-    @FactoryParam
+    @FactoryParam(required = false)
     float _float;
-    @FactoryParam
+    @FactoryParam(required = false)
     double _double;
-    @FactoryParam
+    @FactoryParam(required = false)
     boolean _boolean;
 
     //Interface
-    @FactoryParam
+    @FactoryParam(required = false)
     Parcelable _parcelable;
-    @FactoryParam
+    @FactoryParam(required = false)
     Serializable _serializable;
 
     @Override
@@ -91,7 +108,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         MainActivityFactory.injectArgument(this, savedInstanceState);
 
-//        Intent intent = MainActivityFactory.createIntent(this, 0, "hugahuga");
+        Button injectArgumentsButton = findViewById(R.id.injectArgumentsButton);
+        injectArgumentsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = MainActivityFactory.createIntent(MainActivity.this);
+                startActivity(intent);
+            }
+        });
 //        MainFragment fragment = MainFragmentFactory.createInstance(0, "hugahuga");
     }
 
