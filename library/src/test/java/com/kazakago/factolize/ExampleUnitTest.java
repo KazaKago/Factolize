@@ -1,4 +1,4 @@
-package com.kazakago.activityfactory;
+package com.kazakago.factolize;
 
 import org.junit.Test;
 

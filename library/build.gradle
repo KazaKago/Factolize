@@ -23,11 +23,11 @@ android {
 
 publish {
     userOrg = 'kazakago'
-    groupId = 'com.kazakago.activityfactory'
-    artifactId = 'activityfactory'
+    groupId = 'com.kazakago.factolize'
+    artifactId = 'factolize'
     publishVersion = VERSION_NAME
     desc = "Generate Android's Activity & Fragment factory code."
-    website = 'https://github.com/KazaKago/ActivityFactory'
+    website = 'https://github.com/KazaKago/Factolize'
     licences = ['MIT']
 }
 
@@ -48,5 +48,4 @@ dependencies {
 
 repositories {
     mavenCentral()
-    maven { url "https://maven.google.com" }
 }

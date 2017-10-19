@@ -5,7 +5,7 @@ android {
     buildToolsVersion "26.0.2"
 
     defaultConfig {
-        applicationId "com.kazakago.activityfactory.samplejava"
+        applicationId "com.kazakago.factolize.samplejava"
         minSdkVersion 15
         targetSdkVersion 26
         versionCode 1
@@ -29,8 +29,4 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-}
-
-repositories {
-    maven { url "https://maven.google.com" }
 }

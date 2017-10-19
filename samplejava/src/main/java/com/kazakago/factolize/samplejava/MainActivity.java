@@ -1,25 +1,24 @@
-package com.kazakago.activityfactory.samplejava;
+package com.kazakago.factolize.samplejava;
 
+import android.content.Intent;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Size;
 import android.util.SizeF;
 import android.util.SparseArray;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Button;
 
-import com.kazakago.activityfactory.Factory;
-import com.kazakago.activityfactory.FactoryParam;
+import com.kazakago.factolize.Factory;
+import com.kazakago.factolize.FactoryParam;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
 @Factory
-public class MainFragment extends Fragment {
+public class MainActivity extends AppCompatActivity {
 
     //ArrayList<Class>
     @FactoryParam(required = false)
@@ -104,15 +103,20 @@ public class MainFragment extends Fragment {
     Serializable _serializable;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MainFragmentFactory.injectArgument(this, savedInstanceState);
-    }
+        setContentView(R.layout.activity_main);
+        MainActivityFactory.injectArgument(this, savedInstanceState);
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_main, container, false);
+        Button injectArgumentsButton = findViewById(R.id.injectArgumentsButton);
+        injectArgumentsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = MainActivityFactory.createIntent(MainActivity.this);
+                startActivity(intent);
+            }
+        });
+//        MainFragment fragment = MainFragmentFactory.createInstance(0, "hugahuga");
     }
 
 }

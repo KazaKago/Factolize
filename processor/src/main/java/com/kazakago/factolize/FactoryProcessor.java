@@ -1,10 +1,10 @@
-package com.kazakago.activityfactory;
+package com.kazakago.factolize;
 
 import com.google.auto.service.AutoService;
-import com.kazakago.activityfactory.constants.Types;
-import com.kazakago.activityfactory.generator.ActivityFactoryGenerator;
-import com.kazakago.activityfactory.generator.FragmentFactoryGenerator;
-import com.kazakago.activityfactory.utils.TypeUtils;
+import com.kazakago.factolize.constants.Types;
+import com.kazakago.factolize.generator.ActivityFactoryGenerator;
+import com.kazakago.factolize.generator.FragmentFactoryGenerator;
+import com.kazakago.factolize.utils.TypeUtils;
 
 import java.io.IOException;
 import java.util.Set;
@@ -30,8 +30,8 @@ import javax.tools.Diagnostic;
 @AutoService(Processor.class)
 @SupportedSourceVersion(SourceVersion.RELEASE_7)
 @SupportedAnnotationTypes({
-        "com.kazakago.activityfactory.Factory",
-        "com.kazakago.activityfactory.FactoryParam"})
+        "com.kazakago.factolize.Factory",
+        "com.kazakago.factolize.FactoryParam"})
 public class FactoryProcessor extends AbstractProcessor {
 
     private Messager messager;

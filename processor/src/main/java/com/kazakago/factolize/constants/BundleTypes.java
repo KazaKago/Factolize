@@ -1,6 +1,6 @@
-package com.kazakago.activityfactory.constants;
+package com.kazakago.factolize.constants;
 
-import com.kazakago.activityfactory.utils.TypeUtils;
+import com.kazakago.factolize.utils.TypeUtils;
 import com.squareup.javapoet.TypeName;
 
 import javax.annotation.processing.ProcessingEnvironment;

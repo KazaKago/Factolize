@@ -7,11 +7,11 @@ targetCompatibility = JavaVersion.VERSION_1_7
 
 publish {
     userOrg = 'kazakago'
-    groupId = 'com.kazakago.activityfactory'
-    artifactId = 'activityfactory-processor'
+    groupId = 'com.kazakago.factolize'
+    artifactId = 'factolize-processor'
     publishVersion = VERSION_NAME
     desc = "Generate Android's Activity & Fragment factory code."
-    website = 'https://github.com/KazaKago/ActivityFactory'
+    website = 'https://github.com/KazaKago/Factolize'
     licences = ['MIT']
 }
 

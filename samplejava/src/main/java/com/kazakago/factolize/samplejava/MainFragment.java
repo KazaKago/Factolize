@@ -1,24 +1,25 @@
-package com.kazakago.activityfactory.samplejava;
+package com.kazakago.factolize.samplejava;
 
-import android.content.Intent;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Parcelable;
-import android.support.v7.app.AppCompatActivity;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Size;
 import android.util.SizeF;
 import android.util.SparseArray;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
 
-import com.kazakago.activityfactory.Factory;
-import com.kazakago.activityfactory.FactoryParam;
+import com.kazakago.factolize.Factory;
+import com.kazakago.factolize.FactoryParam;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
 @Factory
-public class MainActivity extends AppCompatActivity {
+public class MainFragment extends Fragment {
 
     //ArrayList<Class>
     @FactoryParam(required = false)
@@ -103,20 +104,15 @@ public class MainActivity extends AppCompatActivity {
     Serializable _serializable;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        MainActivityFactory.injectArgument(this, savedInstanceState);
+        MainFragmentFactory.injectArgument(this, savedInstanceState);
+    }
 
-        Button injectArgumentsButton = findViewById(R.id.injectArgumentsButton);
-        injectArgumentsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = MainActivityFactory.createIntent(MainActivity.this);
-                startActivity(intent);
-            }
-        });
-//        MainFragment fragment = MainFragmentFactory.createInstance(0, "hugahuga");
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_main, container, false);
     }
 
 }

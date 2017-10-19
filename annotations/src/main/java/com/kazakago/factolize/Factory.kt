@@ -1,4 +1,4 @@
-package com.kazakago.activityfactory
+package com.kazakago.factolize
 
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FILE)
 annotation class Factory

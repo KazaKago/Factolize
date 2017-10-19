@@ -1,4 +1,4 @@
-package com.kazakago.activityfactory.utils;
+package com.kazakago.factolize.utils;
 
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;

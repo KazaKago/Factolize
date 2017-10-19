@@ -1,9 +1,9 @@
-package com.kazakago.activityfactory.generator;
+package com.kazakago.factolize.generator;
 
-import com.kazakago.activityfactory.FactoryParam;
-import com.kazakago.activityfactory.constants.Annotations;
-import com.kazakago.activityfactory.constants.BundleTypes;
-import com.kazakago.activityfactory.constants.Types;
+import com.kazakago.factolize.FactoryParam;
+import com.kazakago.factolize.constants.Annotations;
+import com.kazakago.factolize.constants.BundleTypes;
+import com.kazakago.factolize.constants.Types;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;

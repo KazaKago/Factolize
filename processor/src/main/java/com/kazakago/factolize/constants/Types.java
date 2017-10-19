@@ -1,4 +1,4 @@
-package com.kazakago.activityfactory.constants;
+package com.kazakago.factolize.constants;
 
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;

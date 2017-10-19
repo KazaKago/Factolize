@@ -1,4 +1,4 @@
-package com.kazakago.activityfactory.generator;
+package com.kazakago.factolize.generator;
 
 import java.io.IOException;
 

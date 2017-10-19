@@ -1,4 +1,4 @@
-package com.kazakago.activityfactory.samplejava;
+package com.kazakago.factolize.samplejava;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
