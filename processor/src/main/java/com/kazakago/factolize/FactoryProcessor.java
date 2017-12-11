@@ -24,11 +24,11 @@ import javax.tools.Diagnostic;
 
 /**
  * Annotation processor class.
- * <p>
+ *
  * Created by KazaKago on 2017/03/08.
  */
 @AutoService(Processor.class)
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
+@SupportedSourceVersion(SourceVersion.RELEASE_8)
 @SupportedAnnotationTypes({
         "com.kazakago.factolize.Factory",
         "com.kazakago.factolize.FactoryParam"})
