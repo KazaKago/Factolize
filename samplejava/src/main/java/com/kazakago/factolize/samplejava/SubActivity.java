@@ -13,9 +13,9 @@ import com.kazakago.factolize.FactoryParam;
 public class SubActivity extends AppCompatActivity {
 
     @FactoryParam
-    String stringValue;
-    @FactoryParam
     int intValue;
+    @FactoryParam
+    String stringValue;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -26,7 +26,7 @@ public class SubActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.fragmentContainer, SubFragmentFactory.createInstance(stringValue, intValue));
+            fragmentTransaction.replace(R.id.fragmentContainer, SubFragmentFactory.createInstance(intValue, stringValue));
             fragmentTransaction.commit();
         }
     }

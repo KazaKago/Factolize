@@ -16,9 +16,9 @@ import com.kazakago.factolize.FactoryParam;
 public class SubFragment extends Fragment {
 
     @FactoryParam
-    String stringValue;
-    @FactoryParam
     int intValue;
+    @FactoryParam
+    String stringValue;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.kazakago.factolize.Factory;
 
@@ -31,11 +32,14 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        final EditText intEditText = view.findViewById(R.id.intEditText);
+        final EditText stringEditText = view.findViewById(R.id.stringEditText);
+
         Button goToSubActivityButton = view.findViewById(R.id.goToSubActivityButton);
         goToSubActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = SubActivityFactory.createIntent(getActivity());
+                Intent intent = SubActivityFactory.createIntent(getActivity(), Integer.valueOf(intEditText.getText().toString()), stringEditText.getText().toString());
                 startActivity(intent);
             }
         });

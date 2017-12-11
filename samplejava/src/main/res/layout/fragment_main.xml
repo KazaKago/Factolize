@@ -12,7 +12,7 @@
         android:text="intValue"/>
 
     <EditText
-        android:id="@+id/input1EeitText"
+        android:id="@+id/intEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"/>
@@ -23,7 +23,7 @@
         android:text="StringValue"/>
 
     <EditText
-        android:id="@+id/input2EeitText"
+        android:id="@+id/stringEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"/>
