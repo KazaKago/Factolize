@@ -38,7 +38,7 @@ dependencies {
 ## Usage
 
 add `@Factory`　annotation to Activity / Fragment class you want to generate Factory method.  
-Also add `@FactoryPram` annotation to the field variable you want to specify as an argument.  
+Also add `@FactoryParam` annotation to the field variable you want to specify as an argument.  
 
 ```java
 @Factory // `@Factory` is nessesary to generate Factory class & method.
