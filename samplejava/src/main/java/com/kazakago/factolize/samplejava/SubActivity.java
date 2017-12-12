@@ -24,11 +24,17 @@ public class SubActivity extends AppCompatActivity {
         SubActivityFactory.injectArgument(this);
 
         if (savedInstanceState == null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.fragmentContainer, SubFragmentFactory.createInstance(intValue, stringValue));
-            fragmentTransaction.commit();
+            replaceSubFragment();
         }
+    }
+
+    private void replaceSubFragment() {
+        SubFragment fragment = SubFragmentFactory.createInstance(intValue, stringValue);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainer, fragment);
+        fragmentTransaction.commit();
     }
 
 }

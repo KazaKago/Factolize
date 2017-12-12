@@ -42,16 +42,17 @@ public class MainFragment extends Fragment {
         goToSubActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                goSubActivity();
+                int intValue = (!intEditText.getText().toString().isEmpty()) ? Integer.valueOf(intEditText.getText().toString()) : 0;
+                String stringValue = stringEditText.getText().toString();
+
+                goSubActivity(intValue, stringValue);
             }
         });
     }
 
-    private void goSubActivity() {
-        int intValue = (!intEditText.getText().toString().isEmpty()) ? Integer.valueOf(intEditText.getText().toString()) : 0;
-        String stringValue = stringEditText.getText().toString();
-
+    private void goSubActivity(int intValue, String stringValue) {
         Intent intent = SubActivityFactory.createIntent(getActivity(), intValue, stringValue);
         startActivity(intent);
     }
+
 }

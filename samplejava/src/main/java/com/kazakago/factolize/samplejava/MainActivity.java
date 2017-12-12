@@ -18,11 +18,17 @@ public class MainActivity extends AppCompatActivity {
         MainActivityFactory.injectArgument(this);
 
         if (savedInstanceState == null) {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.fragmentContainer, MainFragmentFactory.createInstance());
-            fragmentTransaction.commit();
+            replaceMainFragment();
         }
+    }
+
+    private void replaceMainFragment() {
+        MainFragment fragment = MainFragmentFactory.createInstance();
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainer, fragment);
+        fragmentTransaction.commit();
     }
 
 }
