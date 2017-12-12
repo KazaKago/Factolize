@@ -16,10 +16,13 @@ import com.kazakago.factolize.Factory;
 @Factory
 public class MainFragment extends Fragment {
 
+    private EditText intEditText;
+    private EditText stringEditText;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MainFragmentFactory.injectArgument(this, savedInstanceState);
+        MainFragmentFactory.injectArgument(this);
     }
 
     @Nullable
@@ -32,16 +35,23 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        final EditText intEditText = view.findViewById(R.id.intEditText);
-        final EditText stringEditText = view.findViewById(R.id.stringEditText);
+        intEditText = view.findViewById(R.id.intEditText);
+        stringEditText = view.findViewById(R.id.stringEditText);
 
         Button goToSubActivityButton = view.findViewById(R.id.goToSubActivityButton);
         goToSubActivityButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = SubActivityFactory.createIntent(getActivity(), Integer.valueOf(intEditText.getText().toString()), stringEditText.getText().toString());
-                startActivity(intent);
+                goSubActivity();
             }
         });
+    }
+
+    private void goSubActivity() {
+        int intValue = (!intEditText.getText().toString().isEmpty()) ? Integer.valueOf(intEditText.getText().toString()) : 0;
+        String stringValue = stringEditText.getText().toString();
+
+        Intent intent = SubActivityFactory.createIntent(getActivity(), intValue, stringValue);
+        startActivity(intent);
     }
 }

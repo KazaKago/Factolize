@@ -21,7 +21,7 @@ public class SubActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sub);
-        SubActivityFactory.injectArgument(this, savedInstanceState);
+        SubActivityFactory.injectArgument(this);
 
         if (savedInstanceState == null) {
             FragmentManager fragmentManager = getSupportFragmentManager();

@@ -23,7 +23,7 @@ public class SubFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        SubFragmentFactory.injectArgument(this, savedInstanceState);
+        SubFragmentFactory.injectArgument(this);
     }
 
     @Nullable
@@ -35,9 +35,10 @@ public class SubFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         TextView intValueTextView = view.findViewById(R.id.intValueTextView);
         intValueTextView.setText("intValue : " + intValue);
         TextView stringValueTextView = view.findViewById(R.id.stringValueTextView);
-        stringValueTextView.setText("stringValue" + stringValue);
+        stringValueTextView.setText("stringValue : " + stringValue);
     }
 }

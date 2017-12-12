@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Factolize Sample</string>
+    <string name="main_activity">MainActivity</string>
+    <string name="sub_activity">SubActivity</string>
 </resources>
