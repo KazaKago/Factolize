@@ -1,4 +1,4 @@
-[WIP]Factolize
+Factolize
 ====
 
 [![Download](https://api.bintray.com/packages/kazakago/maven/factolize/images/download.svg)](https://bintray.com/kazakago/maven/factolize/_latestVersion)
@@ -13,7 +13,7 @@ Generate Android's Activity &amp; Fragment factory method.
 
 ## Install
 
-Add the following gradle dependency exchanging x.x.x for the latest release.
+Add the following gradle dependency exchanging x.x.x for the latest release.  
 
 ### Java
 
@@ -41,7 +41,6 @@ add `@Factory`　annotation to Activity / Fragment class you want to generate Fa
 Also add `@FactoryPram` annotation to the field variable you want to specify as an argument.  
 
 ```java
-
 @Factory // `@Factory` is nessesary to generate Factory class & method.
 public class SubActivity extends Activity {
 
@@ -86,24 +85,66 @@ public class MainActivity extends Activity {
 }
 ```
 
-Refer to the sample module ([Java](https://github.com/KazaKago/Factolize/tree/master/samplejava) & [Kotlin](https://github.com/KazaKago/Factolize/tree/master/samplekotlin)) for details.
+Refer to the sample module ([Java](https://github.com/KazaKago/Factolize/tree/master/samplejava) & [Kotlin](https://github.com/KazaKago/Factolize/tree/master/samplekotlin)) for details.  
 
 ## Advanced
 
 ### Required flag & Overload factory method.
 
-[WIP]
+If you want to make an argument optional, you can make it arbitrary by describing `@FactoryParam(requred = false)`. This default is true.  
 
 ```java
-[WIP]
+@Factory
+public class SubActivity extends Activity {
+
+    @FactoryParam
+    String param1; //this parameter is required. (added @NonNull)
+    @FactoryParam(required = true)
+    String param2; //this parameter is required. (added @NonNull)
+    @FactoryParam(required = false)
+    String param3; //this parameter is optional. (added @Nullable)
+
+}
+```
+
+If you specify `@FactoryParam(required = false)`, an overloaded method will be added.  
+
+```java
+Intent intent = SubActivityFactory.createIntent(getActivity(), "parameter1", "parameter2", "parameter3"); // with optional argments
+Intent intent = SubActivityFactory.createIntent(getActivity(), "parameter1", "parameter2"); // only required argments
 ```
 
 ### Handling Activity / Fragment lifecycle & recreate behavior.
 
-[WIP]
+If you consider Andifid's Lifecycle, pass `savedInstanceState` to the `injectArgment()` method argument.  
+If this is specified, if Activity / Fragment recreates, it will not assign to the parameter.  
+
+In this case, implementing the saving process of the variable across the recreation of Activity / Fragment. [More details](https://developer.android.com/guide/components/activities/activity-lifecycle.html#saras).  
 
 ```java
-[WIP]
+@Factory
+public class SubActivity extends Activity {
+
+    @FactoryParam
+    String param;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sub);
+
+        SubActivityFactory.injectArgument(this, savedInstanceState); // pass savedInstanceState
+    }
+
+}
+```
+
+This behavior is the same as the following code.  
+
+```java
+if (savedInstanceState == null) {
+    SubActivityFactory.injectArgument(this);
+}
 ```
 
 ## Supported Type
@@ -147,7 +188,7 @@ Refer to the sample module ([Java](https://github.com/KazaKago/Factolize/tree/ma
   - Double[]
   - Boolean[]
 
-This is the same as Android's Bundle specification. [More details](https://developer.android.com/reference/android/os/Bundle.html).
+This is the same as Android's Bundle specification. [More details](https://developer.android.com/reference/android/os/Bundle.html).  
 
 ## License
 MIT License
