@@ -98,7 +98,7 @@ Refer to the sample module ([Java](https://github.com/KazaKago/Factolize/tree/ma
 [WIP]
 ```
 
-### Consider Activity / Fragment lifecycle & recreate.
+### Handling Activity / Fragment lifecycle & recreate behavior.
 
 [WIP]
 
