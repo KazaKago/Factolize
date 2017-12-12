@@ -5,7 +5,7 @@ Factolize
 [![Build Status](https://www.bitrise.io/app/5e61361019dd0f7c/status.svg?token=oJRivuoE4u64orV4wDsBHg)](https://www.bitrise.io/app/5e61361019dd0f7c)
 [![license](https://img.shields.io/github/license/kazakago/factolize.svg)](LICENSE.md)
 
-Generate Android's Activity &amp; Fragment factory method.
+Generate Android's Activity &amp; Fragment's factory method that can pass arguments easily and safely.
 
 ## Requirement
 
