@@ -1,4 +1,5 @@
 package com.kazakago.factolize
 
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FILE)
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.SOURCE)
 annotation class Factory

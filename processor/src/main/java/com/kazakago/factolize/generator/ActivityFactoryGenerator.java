@@ -11,6 +11,8 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -200,10 +202,18 @@ public class ActivityFactoryGenerator extends CodeGenerator {
                     TypeName fieldType = TypeName.get(el.asType());
                     String fieldName = el.getSimpleName().toString();
                     methodBuilder.beginControlFlow("if (arguments.containsKey($S))", fieldName);
-                    if (bundleTypes.getDefaultValue != null) {
-                        methodBuilder.addStatement("activity.$L = ($T) arguments.$L($S, $L)", fieldName, fieldType, bundleTypes.getMethodName, fieldName, bundleTypes.getDefaultValue);
+                    if (el.getModifiers().contains(Modifier.PRIVATE)) {
+                        if (bundleTypes.getDefaultValue != null) {
+                            methodBuilder.addStatement("activity.set$L(($T) arguments.$L($S, $L))", StringUtils.capitalize(fieldName), fieldType, bundleTypes.getMethodName, fieldName, bundleTypes.getDefaultValue);
+                        } else {
+                            methodBuilder.addStatement("activity.set$L(($T) arguments.$L($S))", StringUtils.capitalize(fieldName), fieldType, bundleTypes.getMethodName, fieldName);
+                        }
                     } else {
-                        methodBuilder.addStatement("activity.$L = ($T) arguments.$L($S)", fieldName, fieldType, bundleTypes.getMethodName, fieldName);
+                        if (bundleTypes.getDefaultValue != null) {
+                            methodBuilder.addStatement("activity.$L = ($T) arguments.$L($S, $L)", fieldName, fieldType, bundleTypes.getMethodName, fieldName, bundleTypes.getDefaultValue);
+                        } else {
+                            methodBuilder.addStatement("activity.$L = ($T) arguments.$L($S)", fieldName, fieldType, bundleTypes.getMethodName, fieldName);
+                        }
                     }
                     methodBuilder.endControlFlow();
                 }

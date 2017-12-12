@@ -11,6 +11,8 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -190,15 +192,23 @@ public class FragmentFactoryGenerator extends CodeGenerator {
         methodBuilder.beginControlFlow("if (arguments != null && savedInstanceState == null)");
         for (Element el : element.getEnclosedElements()) {
             if (el.getAnnotation(FactoryParam.class) != null) {
-                BundleTypes bundleType = BundleTypes.resolve(processingEnv, el.asType());
-                if (bundleType != null) {
+                BundleTypes bundleTypes = BundleTypes.resolve(processingEnv, el.asType());
+                if (bundleTypes != null) {
                     TypeName fieldType = TypeName.get(el.asType());
                     String fieldName = el.getSimpleName().toString();
                     methodBuilder.beginControlFlow("if (arguments.containsKey($S))", fieldName);
-                    if (bundleType.getDefaultValue != null) {
-                        methodBuilder.addStatement("fragment.$L = ($T) arguments.$L($S, $L)", fieldName, fieldType, bundleType.getMethodName, fieldName, bundleType.getDefaultValue);
+                    if (el.getModifiers().contains(Modifier.PRIVATE)) {
+                        if (bundleTypes.getDefaultValue != null) {
+                            methodBuilder.addStatement("fragment.set$L(($T) arguments.$L($S, $L))", StringUtils.capitalize(fieldName), fieldType, bundleTypes.getMethodName, fieldName, bundleTypes.getDefaultValue);
+                        } else {
+                            methodBuilder.addStatement("fragment.set$L(($T) arguments.$L($S))", StringUtils.capitalize(fieldName), fieldType, bundleTypes.getMethodName, fieldName);
+                        }
                     } else {
-                        methodBuilder.addStatement("fragment.$L = ($T) arguments.$L($S)", fieldName, fieldType, bundleType.getMethodName, fieldName);
+                        if (bundleTypes.getDefaultValue != null) {
+                            methodBuilder.addStatement("fragment.$L = ($T) arguments.$L($S, $L)", fieldName, fieldType, bundleTypes.getMethodName, fieldName, bundleTypes.getDefaultValue);
+                        } else {
+                            methodBuilder.addStatement("fragment.$L = ($T) arguments.$L($S)", fieldName, fieldType, bundleTypes.getMethodName, fieldName);
+                        }
                     }
                     methodBuilder.endControlFlow();
                 }
