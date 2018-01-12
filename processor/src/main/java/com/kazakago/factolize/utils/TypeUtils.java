@@ -10,7 +10,9 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 /**
- * Created by Kensuke on 2017/03/18.
+ * Type related utility methods.
+ *
+ * Created by KazaKago on 2017/03/14.
  */
 public class TypeUtils {
 

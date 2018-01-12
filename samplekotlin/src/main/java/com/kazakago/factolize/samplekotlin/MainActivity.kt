@@ -20,8 +20,7 @@ class MainActivity : AppCompatActivity() {
     private fun replaceMainFragment() {
         val fragment = MainFragmentFactory.createInstance()
 
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.fragmentContainer, fragment)
         fragmentTransaction.commit()
     }

@@ -4,6 +4,7 @@ import com.google.auto.service.AutoService;
 import com.kazakago.factolize.constants.Types;
 import com.kazakago.factolize.generator.ActivityFactoryGenerator;
 import com.kazakago.factolize.generator.FragmentFactoryGenerator;
+import com.kazakago.factolize.generator.ViewModelFactoryGenerator;
 import com.kazakago.factolize.utils.TypeUtils;
 
 import java.io.IOException;
@@ -37,6 +38,7 @@ public class FactoryProcessor extends AbstractProcessor {
     private Messager messager;
     private ActivityFactoryGenerator activityFactoryGenerator;
     private FragmentFactoryGenerator fragmentFactoryGenerator;
+    private ViewModelFactoryGenerator viewModelFactoryGenerator;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -44,6 +46,7 @@ public class FactoryProcessor extends AbstractProcessor {
         messager = processingEnv.getMessager();
         activityFactoryGenerator = new ActivityFactoryGenerator(processingEnv);
         fragmentFactoryGenerator = new FragmentFactoryGenerator(processingEnv);
+        viewModelFactoryGenerator = new ViewModelFactoryGenerator(processingEnv);
     }
 
     @Override
@@ -56,6 +59,8 @@ public class FactoryProcessor extends AbstractProcessor {
                         activityFactoryGenerator.execute(element);
                     } else if (TypeUtils.isContainType(processingEnv, element.asType(), Types.Fragment) || TypeUtils.isContainType(processingEnv, element.asType(), Types.AppCompatFragment)) {
                         fragmentFactoryGenerator.execute(element);
+                    } else if (TypeUtils.isContainType(processingEnv, element.asType(), Types.ViewModel)){
+                        viewModelFactoryGenerator.execute(element);
                     } else {
                         messager.printMessage(Diagnostic.Kind.ERROR, "Not activity or fragment");
                     }

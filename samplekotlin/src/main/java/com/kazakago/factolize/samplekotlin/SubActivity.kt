@@ -26,8 +26,7 @@ class SubActivity : AppCompatActivity() {
     private fun replaceSubFragment() {
         val fragment = SubFragmentFactory.createInstance(intValue, stringValue)
 
-        val fragmentManager = supportFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.replace(R.id.fragmentContainer, fragment)
         fragmentTransaction.commit()
     }

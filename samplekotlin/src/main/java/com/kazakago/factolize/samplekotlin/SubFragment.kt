@@ -1,5 +1,7 @@
 package com.kazakago.factolize.samplekotlin
 
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -17,9 +19,14 @@ class SubFragment : Fragment() {
     @FactoryParam
     var stringValue: String = ""
 
+    private lateinit var viewModel: SubViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         SubFragmentFactory.injectArgument(this)
+
+        val viewModelFactory = SubViewModelFactory(activity!!.application, intValue, stringValue)
+        viewModel = ViewModelProviders.of(this, viewModelFactory).get(SubViewModel::class.java)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -28,8 +35,12 @@ class SubFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        intValueTextView.text = "intValue : " + intValue
-        stringValueTextView.text = "stringValue : " + stringValue
+        viewModel.intValueLiveData.observe(this, Observer {
+            intValueTextView.text = String.format("intValue : %d", it)
+        })
+        viewModel.stringValueLiveData.observe(this, Observer {
+            stringValueTextView.text = String.format("stringValue : %s", stringValue)
+        })
     }
+
 }

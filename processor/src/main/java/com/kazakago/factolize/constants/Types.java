@@ -29,6 +29,12 @@ public class Types {
 
     public static final ClassName AppCompatFragment = ClassName.get("android.support.v4.app", "Fragment");
 
+    public static final ClassName ViewModel = ClassName.get("android.arch.lifecycle", "ViewModel");
+
+    public static final ClassName ViewModelProvider = ClassName.get("android.arch.lifecycle", "ViewModelProvider");
+
+    public static final ClassName ViewModelProviderFactory = ClassName.get("android.arch.lifecycle.ViewModelProvider", "Factory");
+
     public static final ClassName NonNull = ClassName.get("android.support.annotation", "NonNull");
 
     public static final ClassName Nullable = ClassName.get("android.support.annotation", "Nullable");
