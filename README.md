@@ -4,7 +4,7 @@ Factolize
 ====
 
 [![Download](https://api.bintray.com/packages/kazakago/maven/factolize/images/download.svg)](https://bintray.com/kazakago/maven/factolize/_latestVersion)
-[![Build Status](https://app.bitrise.io/app/22dea2d90dff2fc2/status.svg?token=WGOLItYWPug9EQjTMbWkKA&branch=master)](https://app.bitrise.io/app/22dea2d90dff2fc2)
+[![Test](https://github.com/KazaKago/Factolize/workflows/Test/badge.svg)](https://github.com/KazaKago/Factolize/actions?query=workflow%3ATest)
 [![license](https://img.shields.io/github/license/kazakago/factolize.svg)](LICENSE.md)
 
 Generate Android's Activity &amp; Fragment's factory method that can pass arguments easily and safely.
